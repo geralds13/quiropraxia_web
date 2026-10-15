@@ -1,8 +1,23 @@
 @import "tailwindcss";
 
+/* Paleta de bienestar (Quiropraxia Bienestar) */
+@theme {
+  --color-wellness-50: #ecfdf5;
+  --color-wellness-100: #d1fae5;
+  --color-wellness-400: #34d399;
+  --color-wellness-500: #10b981;
+  --color-wellness-600: #059669;
+  --color-wellness-primary: #00c48c;
+  --color-wellness-accent: #06b6d4;
+  --color-wellness-darkBg: #0b111e;
+  --color-wellness-card: #131d31;
+  --color-wellness-border: rgba(255, 255, 255, 0.08);
+  --color-wellness-text: #e2e8f0;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0b111e;
+  --foreground: #e8ecf3;
 }
 
 @theme inline {
@@ -12,15 +27,164 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  /* Compensa la navbar sticky al navegar por anclas. */
+  scroll-padding-top: 6.5rem;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Scrollbar suave en tarjetas con overflow */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+
+/* ==========================================================================
+   Sistema de animaciones fluidas (Quiropraxia Bienestar)
+   ========================================================================== */
+
+@keyframes qb-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes qb-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes qb-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes qb-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+}
+
+@keyframes qb-step-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes qb-glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 12px 32px -12px rgba(0, 196, 140, 0.55);
+  }
+  50% {
+    box-shadow: 0 18px 46px -10px rgba(0, 196, 140, 0.85);
+  }
+}
+
+@keyframes qb-gradient-pan {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-overlay-in {
+  animation: qb-overlay-in 0.3s ease-out both;
+}
+
+.animate-overlay-out {
+  animation: qb-overlay-out 0.2s ease-in both;
+}
+
+.animate-panel-in {
+  animation: qb-panel-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-panel-out {
+  animation: qb-panel-out 0.2s ease-in both;
+}
+
+.animate-step-in {
+  animation: qb-step-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-glow-pulse {
+  animation: qb-glow-pulse 3.2s ease-in-out infinite;
+}
+
+/* Botón principal: gradiente animado + glow en hover. */
+.btn-glow {
+  background-size: 200% 200%;
+  box-shadow: 0 10px 30px -12px rgba(0, 196, 140, 0.55);
+  transition:
+    box-shadow 0.3s ease,
+    filter 0.3s ease,
+    transform 0.2s ease,
+    background-position 0.6s ease;
+}
+
+.btn-glow:hover {
+  background-position: 100% 50%;
+  box-shadow: 0 16px 42px -12px rgba(0, 196, 140, 0.9);
+}
+
+/* Tarjeta con vidrio translúcido refinado. */
+.glass-card {
+  background-color: rgba(19, 29, 49, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.glass-panel {
+  background-color: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
