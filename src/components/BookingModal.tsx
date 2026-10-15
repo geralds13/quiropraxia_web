@@ -1387,7 +1387,9 @@ const DEFAULT_PAYMENT_METHODS: { value: WellnessPaymentMethod; label: string }[]
 
 // QR de pagos empaquetado en el frontend (fallback si la empresa no configuró
 // uno dinámico en el backend). El archivo vive en public/assets/img/.
-const LOCAL_PAYMENT_QR = "/assets/img/qr-payment.jpeg";
+// Titular: Key Cheryl Torres Perez. El query param ?v= invalida la caché del
+// navegador y de la optimización de imágenes cuando se reemplaza el archivo.
+const LOCAL_PAYMENT_QR = "/assets/img/qr-payment.jpeg?v=2";
 
 function PaymentStep({
   isPackage,
@@ -1474,7 +1476,7 @@ function PaymentStep({
               {/* eslint-disable-next-line @next/next/no-img-element -- QR remoto del backend o asset local */}
               <img
                 src={paymentInfo?.qr_url ?? LOCAL_PAYMENT_QR}
-                alt="Código QR de pago"
+                alt="QR de Pago Yape - Key Cheryl Torres Perez"
                 className="block h-auto w-full object-cover"
               />
             </div>
