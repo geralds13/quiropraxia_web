@@ -102,25 +102,38 @@ export default function ServicesList() {
                     <h3 className="mt-4 text-lg font-bold text-white">
                       {service.name}
                     </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-300">
+                    <p className="mt-2 text-sm leading-relaxed text-slate-300">
                       {service.description}
                     </p>
 
-                    {service.includes.length > 0 ? (
-                      <ul className="mt-4 space-y-1.5">
-                        {service.includes.slice(0, 3).map((include) => (
+                    {Array.isArray(service.includes) &&
+                    service.includes.length > 0 ? (
+                      <ul className="my-3 space-y-1.5 text-xs text-slate-300">
+                        {service.includes.map((include, index) => (
                           <li
-                            key={include}
-                            className="flex items-start gap-2 text-xs text-slate-400"
+                            key={`${service.id}-inc-${index}`}
+                            className="flex items-start gap-2"
                           >
-                            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-wellness-400" />
-                            {include}
+                            <span className="mt-0.5 font-bold text-emerald-400">
+                              •
+                            </span>
+                            <span>{include}</span>
                           </li>
                         ))}
                       </ul>
                     ) : null}
 
-                    <div className="mt-5 flex items-center justify-between border-t border-wellness-border pt-4">
+                    {service.protocol_notes &&
+                    service.protocol_notes.trim() !== "" ? (
+                      <div className="my-2.5 flex items-start gap-2 rounded-lg border border-emerald-800/50 bg-emerald-950/40 p-2.5 text-xs text-emerald-300">
+                        <span aria-hidden="true" className="text-sm">
+                          ℹ️
+                        </span>
+                        <p className="leading-snug">{service.protocol_notes}</p>
+                      </div>
+                    ) : null}
+
+                    <div className="mt-auto flex items-center justify-between border-t border-wellness-border pt-4">
                       <span className="text-xl font-bold text-wellness-400">
                         {formatSoles(service.price)}
                       </span>

@@ -13,6 +13,7 @@ export interface PublicService {
   includes: string[];
   protocol_notes: string;
   is_active: boolean;
+  is_visible_on_web: boolean;
 }
 
 export interface PublicPackage {
@@ -25,6 +26,7 @@ export interface PublicPackage {
   price: string;
   validity_days: number;
   is_active: boolean;
+  is_visible_on_web: boolean;
 }
 
 export interface WellnessContact {

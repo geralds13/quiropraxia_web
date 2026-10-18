@@ -153,6 +153,9 @@ export default function BookingModal({
   const [lookupMessage, setLookupMessage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  // Bloqueo defensivo: un servicio/paquete oculto en la web (o enlace antiguo)
+  // no puede reservarse aunque llegue preseleccionado.
+  const [selectionUnavailable, setSelectionUnavailable] = useState(false);
 
   // Cierre animado: reproduce la salida antes de desmontar el modal.
   const [closing, setClosing] = useState(false);
@@ -200,6 +203,30 @@ export default function BookingModal({
       }
     })();
   }, [isPackage, packages]);
+
+  // Guardia de visibilidad: si el servicio preseleccionado ya no está publicado
+  // en la web (oculto por el administrador), se descarta y vuelve al paso 1.
+  useEffect(() => {
+    if (isPackage || services === null || serviceId == null) return;
+    if (!services.some((service) => service.id === serviceId)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- descarta una selección oculta
+      setServiceId(null);
+      setStep(1);
+      setFormError(
+        "El servicio seleccionado ya no está disponible en la web. Elige otro servicio.",
+      );
+    }
+  }, [isPackage, services, serviceId]);
+
+  // Guardia de visibilidad para paquetes: si el paquete preseleccionado no está
+  // publicado en la web, se bloquea la reserva y se muestra un aviso.
+  useEffect(() => {
+    if (!isPackage || packages === null) return;
+    if (!packages.some((entry) => entry.id === packageId)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- bloquea un paquete oculto
+      setSelectionUnavailable(true);
+    }
+  }, [isPackage, packages, packageId]);
 
   // Consulta la disponibilidad real (anticolisión) al elegir fecha y servicio.
   useEffect(() => {
@@ -504,6 +531,17 @@ export default function BookingModal({
         </header>
 
         <div className="flex-1 overflow-y-auto px-5 py-5 sm:px-7">
+          {selectionUnavailable ? (
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-6 text-center">
+              <p className="text-sm font-semibold text-amber-200">
+                Este paquete ya no está disponible
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-amber-200/80">
+                El paquete seleccionado fue ocultado de la web de reservas.
+                Elige otro paquete desde la página o escríbenos por WhatsApp.
+              </p>
+            </div>
+          ) : (
           <div key={step} className="animate-step-in">
             {isPackage && selectedPackage && step < 5 ? (
             <div className="mb-4 rounded-2xl border border-emerald-500/20 bg-emerald-950/20 p-4">
@@ -617,6 +655,7 @@ export default function BookingModal({
             />
           ) : null}
           </div>
+          )}
 
           {formError ? (
             <p className="mt-4 animate-step-in rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
@@ -626,7 +665,7 @@ export default function BookingModal({
         </div>
 
         <footer className="shrink-0 border-t border-white/5 px-5 py-4 sm:px-7">
-          {step < 5 ? (
+          {step < 5 && !selectionUnavailable ? (
             <div className="flex items-center gap-3">
               {step > (isPackage ? 2 : 1) ? (
                 <button
@@ -922,6 +961,35 @@ function ServiceStep({
                     </span>
                   ) : null}
                 </span>
+
+                {Array.isArray(service.includes) &&
+                service.includes.length > 0 ? (
+                  <span className="flex flex-col gap-1 text-[11px] text-slate-300">
+                    {service.includes.map((include, index) => (
+                      <span
+                        key={`${service.id}-inc-${index}`}
+                        className="flex items-start gap-1.5"
+                      >
+                        <span className="mt-0.5 font-bold text-emerald-400">
+                          •
+                        </span>
+                        <span>{include}</span>
+                      </span>
+                    ))}
+                  </span>
+                ) : null}
+
+                {service.protocol_notes &&
+                service.protocol_notes.trim() !== "" ? (
+                  <span className="flex items-start gap-2 rounded-lg border border-emerald-800/50 bg-emerald-950/40 p-2.5 text-[11px] text-emerald-300">
+                    <span aria-hidden="true" className="text-sm">
+                      ℹ️
+                    </span>
+                    <span className="leading-snug">
+                      {service.protocol_notes}
+                    </span>
+                  </span>
+                ) : null}
 
                 <span className="mt-auto text-base font-semibold text-[#00C48C]">
                   {formatSoles(service.price)}

@@ -82,6 +82,7 @@ function toService(value: unknown): PublicService | null {
       : [],
     protocol_notes: String(raw.protocol_notes ?? ""),
     is_active: raw.is_active !== false,
+    is_visible_on_web: raw.is_visible_on_web !== false,
   };
 }
 
@@ -100,6 +101,7 @@ function toPackage(value: unknown): PublicPackage | null {
     price: String(raw.price ?? "0.00"),
     validity_days: Number(raw.validity_days) || 0,
     is_active: raw.is_active !== false,
+    is_visible_on_web: raw.is_visible_on_web !== false,
   };
 }
 
@@ -200,9 +202,10 @@ export async function getPublicServices(): Promise<PublicService[]> {
   const { data } = await api.get<unknown>("/wellness/public/services/", {
     params: { company_slug: COMPANY_SLUG },
   });
-  return parseList<PublicService>(data).map(toService).filter(
-    (item): item is PublicService => item !== null,
-  );
+  return parseList<PublicService>(data)
+    .map(toService)
+    .filter((item): item is PublicService => item !== null)
+    .filter((item) => item.is_active && item.is_visible_on_web);
 }
 
 /**
@@ -213,9 +216,10 @@ export async function getPublicPackages(): Promise<PublicPackage[]> {
   const { data } = await api.get<unknown>("/wellness/public/packages/", {
     params: { company_slug: COMPANY_SLUG },
   });
-  return parseList<PublicPackage>(data).map(toPackage).filter(
-    (item): item is PublicPackage => item !== null,
-  );
+  return parseList<PublicPackage>(data)
+    .map(toPackage)
+    .filter((item): item is PublicPackage => item !== null)
+    .filter((item) => item.is_active && item.is_visible_on_web);
 }
 
 /**
